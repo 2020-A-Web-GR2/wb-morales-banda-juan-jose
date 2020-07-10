@@ -1,4 +1,18 @@
-import {BadRequestException, Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Query} from "@nestjs/common";
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Header,
+    HttpCode,
+    Param,
+    Post,
+    Query,
+    Req, Res
+} from "@nestjs/common";
+import {MascotaCreateDto} from "./dto/mascota.create-dto";
+import {validate, ValidationError} from "class-validator";
 
 /// http://localhost:3001/juegos-http
 // /juegos-http
@@ -58,12 +72,52 @@ export class HttpJuegoController {
         }
     }
 
+    @HttpCode(200)
     @Post('parametros-cuerpo')
-    parametrosDeCuerpo(
+    async parametrosDeCuerpo(
         @Body() parametrosDeCuerpo
     ) {
-        console.log('Parametros de cuerpo', parametrosDeCuerpo)
-        return 'Registro creado'
+        // Promesas
+        const mascotaValida = new MascotaCreateDto();
+        mascotaValida.nombre = parametrosDeCuerpo.nombre;
+        mascotaValida.edad = parametrosDeCuerpo.edad;
+        mascotaValida.casada = parametrosDeCuerpo.casada;
+        mascotaValida.ligada = parametrosDeCuerpo.ligada;
+        mascotaValida.peso = parametrosDeCuerpo.peso;
+        try {
+            const errores: ValidationError[] = await validate(mascotaValida);
+            if (errores.length > 0) {
+                console.log('Error', errores)
+                throw new BadRequestException('Error validando')
+            } else {
+                const mensajeCorrecto = {
+                    mensaje: 'Se creo correctamente'
+                };
+                console.log('Parametros de cuerpo', parametrosDeCuerpo)
+                return mensajeCorrecto;
+            }
+        } catch (error) {
+            console.log('Error', error);
+            throw new BadRequestException('Error validando');
+        }
     }
 
+    // 1 Guardar Cookie Insegura
+    // 2 Guardar Cookie Segura
+    // 3 Mostrar Cookies
+    @Get('guardarCookieInsegura')
+    guardarCookieInsegura(
+        @Query() parametrosConsulta,
+        @Req() req,  // request - peticicon
+        @Res() res  // response - respuesta
+    ) {
+        res.cookie(
+            'galletaInsegura', // nombre
+            'Tengo hambre', // valor
+        );
+        res.send({ // metodo EXPRESSJS
+            mensaje: 'ok'
+        });
+        // NO SE PUEDE USAR RETURN CUANDO SE USA @RES
+    }
 }

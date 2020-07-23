@@ -1,26 +1,12 @@
-import {IsInt, IsNegative, IsNotEmpty, IsNumber, IsPositive} from "class-validator";
-
-export class CalculadoraDTO {
-
-    @IsInt()
-    @IsPositive()
-    @IsNegative()
-    @IsNotEmpty()
-    dividendo: number;
-
-    @IsPositive()
-    @IsNegative()
-    @IsNotEmpty()
-    divisor: number;
-}
+import {IsInt, IsNotEmpty} from "class-validator";
 
 export class restaDTO {
     @IsInt()
     @IsNotEmpty()
-    numero1: number
+    numero1: number;
 
     @IsInt()
     @IsNotEmpty()
-    numero2: number
+    numero2: number;
 }
 

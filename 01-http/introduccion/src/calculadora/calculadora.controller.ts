@@ -22,30 +22,32 @@ export class CalculadoraController {
     @HttpCode(200)
     sumar(
         @Query() parametrosDeConsulta,
-        @Req() req
+        @Req() req,
+        @Res() res
     ) {
         const arrayCookies: object = req.cookies;
-        if (arrayCookies['nombreUsuario']) {
-            const num1: number = parseFloat(parametrosDeConsulta.numero1);
-            const num2: number = parseFloat(parametrosDeConsulta.numero2);
+        if (req.cookies['nombreUsuario']) {
+            const num1: number = Number(parametrosDeConsulta.numero1);
+            const num2: number = Number(parametrosDeConsulta.numero2);
             if (isNaN(num1) || isNaN(num2)) {
                 throw new BadRequestException('Error validando');
             } else {
                 console.log('Parametros de consulta', parametrosDeConsulta);
-                return num1 + num2;
+                const valor: number = (num1 + num2)
+                const puntaje: number = Number(req.signedCookies['puntaje']) - Math.abs(valor);
+                this.validacionPuntaje(req, res, puntaje, valor);
             }
         } else {
-            throw new BadRequestException('Sin Usuario');
+            throw new BadRequestException('Sin Usuario, por favor regístrese');
         }
-
-
     }
 
     @Put('restar')
     @HttpCode(201)
     async restar(
         @Body() parametrosDeCuerpo,
-        @Req() req
+        @Req() req,
+        @Res() res
     ) {
         const arrayCookies: object = req.cookies;
         if (arrayCookies['nombreUsuario']) {
@@ -59,14 +61,16 @@ export class CalculadoraController {
                     throw new BadRequestException('Error validando');
                 } else {
                     console.log('Parametros de cuerpo', parametrosDeCuerpo);
-                    return resta.numero1 - resta.numero2;
+                    const valor: number = (resta.numero1 - resta.numero2)
+                    const puntaje: number = Number(req.signedCookies['puntaje']) - Math.abs(valor);
+                    this.validacionPuntaje(req, res, puntaje, valor);
                 }
             } catch (e) {
                 console.log(e);
                 throw new BadRequestException('Error validando');
             }
         } else {
-            throw new BadRequestException('Sin Usuario');
+            throw new BadRequestException('Sin Usuario, por favor regístrese');
         }
     }
 
@@ -74,20 +78,23 @@ export class CalculadoraController {
     @HttpCode(200)
     multiplicar(
         @Headers() headers,
-        @Req() req
+        @Req() req,
+        @Res() res
     ) {
         const arrayCookies: object = req.cookies;
         if (arrayCookies['nombreUsuario']) {
-            const num1: number = parseFloat(headers.numero1);
-            const num2: number = parseFloat(headers.numero2);
+            const num1: number = Number(headers.numero1);
+            const num2: number = Number(headers.numero2);
             if (isNaN(num1) || isNaN(num2)) {
                 throw new BadRequestException('Error validando');
             } else {
                 console.log('Headers', headers);
-                return num1 * num2;
+                const valor: number = (num1 * num2)
+                const puntaje: number = Number(req.signedCookies['puntaje']) - Math.abs(valor);
+                this.validacionPuntaje(req, res, puntaje, valor);
             }
         } else {
-            throw new BadRequestException('Sin Usuario');
+            throw new BadRequestException('Sin Usuario, por favor regístrese');
         }
     }
 
@@ -95,22 +102,24 @@ export class CalculadoraController {
     @HttpCode(201)
     dividir(
         @Param() parametrosDeRuta,
-        @Req() req
+        @Req() req,
+        @Res() res
     ) {
         const arrayCookies: object = req.cookies;
         if (arrayCookies['nombreUsuario']) {
-            const dividendo: number = parseFloat(parametrosDeRuta.dividendo);
-            const divisor: number = parseFloat(parametrosDeRuta.divisor);
+            const dividendo: number = Number(parametrosDeRuta.dividendo);
+            const divisor: number = Number(parametrosDeRuta.divisor);
             if (isNaN(dividendo) || isNaN(divisor) || divisor === 0) {
                 throw new BadRequestException('Error validando')
             } else {
                 console.log('Parametros de ruta', parametrosDeRuta);
-                return parametrosDeRuta.dividendo / parametrosDeRuta.divisor;
+                const valor: number = (parametrosDeRuta.dividendo / parametrosDeRuta.divisor)
+                const puntaje: number = Number(req.signedCookies['puntaje']) - Math.abs(valor);
+                this.validacionPuntaje(req, res, puntaje, valor);
             }
         } else {
-            throw new BadRequestException('Sin Usuario');
+            throw new BadRequestException('Sin Usuario, por favor regístrese');
         }
-
     }
 
     @Get('guardar-usuario')
@@ -121,8 +130,10 @@ export class CalculadoraController {
         @Res() res
     ) {
         res.cookie('nombreUsuario', parametrosDeConsulta.usuario);
+        res.cookie('puntaje', 100, {signed: true});
         res.send({
-            mensaje: 'Usuario guardado'
+            mensaje: 'Usuario guardado',
+            usuario: parametrosDeConsulta.usuario
         });
         console.log('cookie creada', req.cookies['nombreUsuario']);
     }
@@ -137,4 +148,19 @@ export class CalculadoraController {
         };
         return mensaje;
     }
+
+    validacionPuntaje(req, res, puntaje, valor) {
+        const mensajeInformativo: string = req.cookies['nombreUsuario'] + ', terminaste tus puntos. Se te han restablecido a 100 nuevamente'
+        let mensaje = {
+            respuesta: valor
+        }
+        if (puntaje < 1) {
+            mensaje['Informacion'] = mensajeInformativo
+            res.cookie('puntaje', 100, {signed: true});
+        } else {
+            res.cookie('puntaje', puntaje, {signed: true});
+        }
+        res.send(mensaje);
+    }
+
 }

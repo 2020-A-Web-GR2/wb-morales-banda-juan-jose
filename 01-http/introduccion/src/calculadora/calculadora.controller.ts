@@ -152,7 +152,8 @@ export class CalculadoraController {
     validacionPuntaje(req, res, puntaje, valor) {
         const mensajeInformativo: string = req.cookies['nombreUsuario'] + ', terminaste tus puntos. Se te han restablecido a 100 nuevamente'
         let mensaje = {
-            respuesta: valor
+            respuesta: valor,
+            puntos: puntaje
         }
         if (puntaje < 1) {
             mensaje['Informacion'] = mensajeInformativo
@@ -161,6 +162,6 @@ export class CalculadoraController {
             res.cookie('puntaje', puntaje, {signed: true});
         }
         res.send(mensaje);
-    }
 
+    }
 }

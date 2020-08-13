@@ -10,10 +10,10 @@ export class UsuarioEntity {
         'fechaNacimiento'  // Nombres de las propiedades en la clase,
     ])
 
-    @Index(
-        ['nombre', 'apellido', 'cedula'],
-        {unique: true}
-    )
+    // @Index(
+    //     ['nombre', 'apellido', 'cedula'],
+    //     {unique: true}
+    // )
 
     @PrimaryGeneratedColumn({
         unsigned: true,  // para quitar el signo y trabajar solo con positivos
@@ -28,7 +28,7 @@ export class UsuarioEntity {
         length: 60,  // longitud del tipo
         nullable: true,  // para permitir que sea nulo
     })
-    nommbre?: string;  // por ende especificar que puede ser vacio con ?
+    nombre?: string;  // por ende especificar que puede ser vacio con ?
 
     @Column({
         name: 'apellido',

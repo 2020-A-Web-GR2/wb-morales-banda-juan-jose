@@ -1,4 +1,6 @@
-import {Column, Entity, Index, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, Index, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {MascotaEntity} from "../mascota/mascota.entity";
+
 
 @Entity('epn_usuario')  // nombre dela tabla en la base de datos
 export class UsuarioEntity {
@@ -69,5 +71,13 @@ export class UsuarioEntity {
         type: 'datetime',
     })
     fechaHoraNacimiento?: string;
+
+    @OneToMany(
+        type => MascotaEntity, // Entidad con la que nos relacionamos
+        mascota => mascota.usuario  // Campo con el que nos relacionamos
+    )
+    mascotas: MascotaEntity[]
+
+
 
 }

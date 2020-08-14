@@ -15,11 +15,19 @@ export class UsuarioService {
         return this.repositorio.save(nuevoUsuario); //promesa
     }
 
-    buscarTodos(){
+    buscarTodos() {
         return this.repositorio.find();  //promesa
     }
 
-    buscarUno(id: number){
+    buscarUno(id: number) {
         return this.repositorio.findOne(id);  //promesa
+    }
+
+    editarUno(usuarioEditado: UsuarioEntity) {
+        return this.repositorio.save(usuarioEditado)
+    }
+
+    eliminarUno(id: number) {
+        return this.repositorio.delete(id);
     }
 }

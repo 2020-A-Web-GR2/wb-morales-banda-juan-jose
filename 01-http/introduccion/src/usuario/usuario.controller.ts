@@ -108,26 +108,65 @@ export class UsuarioController {
     }
 
     @Put(':id')
-    editarUno(
+    async editarUno(
         @Param() parametrosRuta,
         @Body() parametrosCuerpo
     ) {
-        const indice = this.arregloUsuarios.findIndex(
-            (usuario) => usuario.id === Number(parametrosRuta.id)
-        );
-        this.arregloUsuarios[indice].nombre = parametrosCuerpo.nombre;
-        return this.arregloUsuarios[indice];
+        const id = Number(parametrosRuta.id);
+        const usuarioEditado = parametrosCuerpo;
+        usuarioEditado.id = id;
+        let respuesta;
+        try {
+            respuesta = await this._usuarioService.editarUno(usuarioEditado);
+        } catch (e) {
+            console.error(e);
+            throw new InternalServerErrorException({
+                mensaje: 'Error validando datos'
+            });
+        }
+        if (respuesta) {
+            return respuesta;
+        } else {
+            throw new NotFoundException({
+                mensaje: "No existen registros"
+            });
+        }
+
+        // const indice = this.arregloUsuarios.findIndex(
+        //     (usuario) => usuario.id === Number(parametrosRuta.id)
+        // );
+        // this.arregloUsuarios[indice].nombre = parametrosCuerpo.nombre;
+        // return this.arregloUsuarios[indice];
     }
 
     @Delete(':id')
-    eliminarUno(
+    async eliminarUno(
         @Param() parametrosRuta
     ) {
-        const indice = this.arregloUsuarios.findIndex(
-            (usuario) => usuario.id === Number(parametrosRuta.id)
-        );
-        this.arregloUsuarios.splice(indice, 1);
-        return this.arregloUsuarios[indice];
+        const id = Number(parametrosRuta.id);
+        let respuesta;
+        try {
+            respuesta = await this._usuarioService.eliminarUno(id);
+        } catch (e) {
+            console.error(e);
+            throw new InternalServerErrorException({
+                mensaje: 'Error validando datos'
+            });
+        }
+        if (respuesta) {
+            return {
+                mensaje: "Registro con id " + id + " eliminado"
+            };
+        } else {
+            throw new NotFoundException({
+                mensaje: "No existen registros"
+            });
+        }
+        // const indice = this.arregloUsuarios.findIndex(
+        //     (usuario) => usuario.id === Number(parametrosRuta.id)
+        // );
+        // this.arregloUsuarios.splice(indice, 1);
+        // return this.arregloUsuarios[indice];
     }
 
 

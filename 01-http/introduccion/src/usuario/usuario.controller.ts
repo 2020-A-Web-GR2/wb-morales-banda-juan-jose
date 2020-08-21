@@ -7,9 +7,11 @@ import {
     InternalServerErrorException, NotFoundException,
     Param,
     Post,
-    Put
+    Put,
+    Res
 } from "@nestjs/common";
-import {UsuarioService} from "./usuario.service";
+import { UsuarioService } from "./usuario.service";
+import { MascotaService } from "src/mascota/mascota.service";
 
 @Controller('usuario')
 export class UsuarioController {
@@ -39,8 +41,11 @@ export class UsuarioController {
     ]
     public idActual = 3;
 
+    // Inyeccion de dependencias
+    // usar _nombre cuando son servicios propios
     constructor(
-        private readonly _usuarioService: UsuarioService
+        private readonly _usuarioService: UsuarioService,
+        private readonly _mascotaService: MascotaService,
     ) {
 
     }
@@ -169,5 +174,61 @@ export class UsuarioController {
         // return this.arregloUsuarios[indice];
     }
 
+    @Post('crearUsuarioYCrearMascota')
+    async crearUsuarioYCrearMascota(
+        @Body() parametrosCuerpo
+    ) {
+        const usuario = parametrosCuerpo.usuario;
+        const mascota = parametrosCuerpo.mascota;
+        // Validar Usuario con DTO
+        // Validar Mascota con DTO
+        // CREAR AMBOS
+        let usuarioCreado;
+        try {
+            usuarioCreado = await this._usuarioService.crearUno(usuario);
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException({
+                mensaje: 'Error Creando Usuario'
+            })
+        }
+        if (usuarioCreado) {
+            mascota.usuario = usuarioCreado.id;
+            let mascotaCreada;
+            try {
+                mascotaCreada = await this._mascotaService.crearNuevaMascota(mascota)
+            } catch (e) {
+                console.log(e)
+                throw new InternalServerErrorException({
+                    mensaje: 'Error Creando Mascota'
+                })
+            }
+            if (mascotaCreada) {
+                return {
+                    mascota: mascotaCreada,
+                    usuario: usuarioCreado
+                }
+            } else {
+                throw new InternalServerErrorException({
+                    mensaje: 'Error Creando Mascota'
+                })
+            }
+        } else {
+            throw new InternalServerErrorException({
+                mensaje: 'Error Creando Mascota'
+            })
+        }
+    }
 
+    @Get('vista/usuario')
+    vistaUsuario(
+        @Res() res
+    ){
+        const nombreControlador = 'Juan';
+        res.render(
+            'ejemplo', // nombre de la vista
+            { // parametros de vista
+                nombre: nombreControlador,
+            })
+    }
 }

@@ -220,14 +220,15 @@ export class UsuarioController {
         }
     }
 
+    /* VISTAS */
     @Get('vista/usuario')
     vistaUsuario(
         @Res() res
     ) {
         const nombreControlador = 'Juan';
         res.render(
-            'usuario/ejemplo', // nombre de la vista
-            { // parametros de vista
+            'usuario/ejemplo',  // nombre de la vista
+            {                   // parametros de vista
                 nombre: nombreControlador,
             })
     }
@@ -247,10 +248,38 @@ export class UsuarioController {
     }
 
     @Get('vista/inicio')
-    inicio(
+    async inicio(
         @Res() res
     ) {
-        res.render('usuario/inicio')
+        let resultadoEncontrado
+        try{
+            resultadoEncontrado = await this._usuarioService.buscarTodos();
+        }catch(error){
+            throw new InternalServerErrorException('Error encontrando usuarios')
+        }
+        if(resultadoEncontrado){
+            res.render(
+                'usuario/inicio',
+                {
+                    arregloUsuarios: resultadoEncontrado
+                })    
+        }else{
+            throw new NotFoundException('No se encontraron usuarios')
+        }
+    }
+
+    @Get('vista/deber')
+    deber(
+        @Res() res
+    ) {
+        res.render('usuario/deber')
+    }
+
+    @Get('vista/crear')
+    crearUsuarioVista(
+        @Res() res
+    ) {
+        res.render('usuario/crear')
     }
 
 }

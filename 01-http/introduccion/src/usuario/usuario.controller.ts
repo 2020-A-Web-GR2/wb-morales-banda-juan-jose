@@ -7,11 +7,11 @@ import {
     InternalServerErrorException, NotFoundException,
     Param,
     Post,
-    Put,
+    Put, Query,
     Res
 } from "@nestjs/common";
-import { UsuarioService } from "./usuario.service";
-import { MascotaService } from "src/mascota/mascota.service";
+import {UsuarioService} from "./usuario.service";
+import {MascotaService} from "src/mascota/mascota.service";
 
 @Controller('usuario')
 export class UsuarioController {
@@ -220,14 +220,68 @@ export class UsuarioController {
         }
     }
 
+    @Post('crearDesdeVista')
+    async crearDesdeVista(
+        @Body() parametrosCuerpo,
+        @Res() res,
+    ) {
+        //VALIDAR CON DTO
+        let nombreApellidoConsulta
+        let cedulaConsulta
+        if (parametrosCuerpo.cedula && parametrosCuerpo.nombre && parametrosCuerpo.apellido) {
+            nombreApellidoConsulta = `&nombre=${parametrosCuerpo.nombre}&apellido=${parametrosCuerpo.apellido}`
+            if (parametrosCuerpo.cedula.length === 10) {
+                cedulaConsulta = `&cedula=${parametrosCuerpo.cedula}`
+            } else {
+                const mensajeError = 'Cedula Incorrecta'
+                return res.redirect('/usuario/vista/crear?error=' + mensajeError + nombreApellidoConsulta)
+            }
+        } else {
+            const mensajeError = 'Enviar cedula (10) nombre y apellido'
+            return res.redirect('/usuario/vista/crear?error=' + mensajeError)
+        }
+
+        let respuestaCreacionUsuario
+        try {
+            respuestaCreacionUsuario = await this._usuarioService.crearUno(parametrosCuerpo)
+        } catch (e) {
+            console.log(e)
+            const mensajeError = 'Error Creando Usuario'
+            return res.redirect('/usuario/vista/crear?error=' + mensajeError + nombreApellidoConsulta + cedulaConsulta)
+        }
+        if (respuestaCreacionUsuario) {
+            console.log(respuestaCreacionUsuario)
+            return res.redirect('/usuario/vista/inicio')
+        } else {
+            const mensajeError = 'Error Creando Usuario'
+            return res.redirect('/usuario/vista/crear?error=' + mensajeError + nombreApellidoConsulta + cedulaConsulta)
+        }
+    }
+
+    @Post('eliminarDesdeVista/:id')
+    async eliminarDesdeVista(
+        @Param() parametrosRuta,
+        @Res() res
+    ) {
+        try {
+            const id = Number(parametrosRuta.id);
+            await this._usuarioService.eliminarUno(id)
+            return res.redirect('/usuario/vista/inicio?mensaje=Usuario eliminado')
+        } catch (e) {
+            console.log(e)
+            return res.redirect('/usuario/vista/inicio?error=Error eliminando usuariro')
+        }
+    }
+
+    /* VISTAS */
     @Get('vista/usuario')
     vistaUsuario(
         @Res() res
     ) {
         const nombreControlador = 'Juan';
-        res.render(
-            'usuario/ejemplo', // nombre de la vista
-            { // parametros de vista
+        return res.render(
+            'usuario/ejemplo',  // nombre de la vista
+            {                   // parametros de vista
                 nombre: nombreControlador,
             })
     }
@@ -236,21 +290,58 @@ export class UsuarioController {
     faq(
         @Res() res
     ) {
-        res.render('usuario/faq')
+        return res.render('usuario/faq')
     }
 
     @Get('vista/login')
     login(
         @Res() res
     ) {
-        res.render('usuario/login')
+        return res.render('usuario/login')
     }
 
     @Get('vista/inicio')
-    inicio(
+    async inicio(
         @Res() res
     ) {
-        res.render('usuario/inicio')
+        let resultadoEncontrado
+        try {
+            resultadoEncontrado = await this._usuarioService.buscarTodos();
+        } catch (error) {
+            throw new InternalServerErrorException('Error encontrando usuarios')
+        }
+        if (resultadoEncontrado) {
+            res.render(
+                'usuario/inicio',
+                {
+                    arregloUsuarios: resultadoEncontrado
+                })
+        } else {
+            throw new NotFoundException('No se encontraron usuarios')
+        }
+    }
+
+    @Get('vista/deber')
+    deber(
+        @Res() res
+    ) {
+        return res.render('usuario/deber')
+    }
+
+    @Get('vista/crear')
+    crearUsuarioVista(
+        @Query() parametrosConsulta,
+        @Res() res
+    ) {
+        return res.render(
+            'usuario/crear',
+            {
+                error: parametrosConsulta.error,
+                nombre: parametrosConsulta.nombre,
+                apellido: parametrosConsulta.apellido,
+                cedula: parametrosConsulta.cedula
+            }
+        )
     }
 
 }

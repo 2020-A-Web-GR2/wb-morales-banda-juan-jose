@@ -5,9 +5,9 @@
 <!-- Sirve  para mostrar las variables que tengamos dentro de un archivo -->
 <p><%= "Hola" %></p>
 <p><%= 15 %></p>
-<!-- "<% %>" -->
+<!-- "<%   %>" -->
 <!-- Sirve para utilizar código JavaScript -->
-<% const juan = {nombre:"Juan", apellido:"Morales", cedula:"1723"} %>
+<% const juan = {nombre: "Juan", apellido: "Morales", cedula: "1723"} %>
 <% const numero = 25 %>
 <% const mensaje = "Wenas" %>
 
@@ -16,7 +16,7 @@
 <p><%= numero %> </p>
 <p><%= mensaje %> </p>
 
-<% const arregloNumeros = [1,2,3,4,5] %>
+<% const arregloNumeros = [1, 2, 3, 4, 5] %>
 <ul>
     <% arregloNumeros.forEach((objeto) => { %>
         <li><%= objeto %></li>
@@ -27,6 +27,9 @@
     <button>Crear</button>
 </a>
 
+<% if(typeof parametrosConsulta != 'undefined') { %>
+    <p>MENSAJE: <%= parametrosConsulta.mensaje %></p>
+<% } %>
 
 <table>
     <!-- TABLE ROW -->
@@ -45,15 +48,17 @@
             <td><%= objeto.cedula %></td>
             <td>
                 <button>Ver</button>
-                <button>Editar</button>
-                <form action="/usuario/eliminarDesdeVista/<%=objeto.id%>" method="POST">
+                <a href="/usuario/vista/editar/<%= objeto.id%>">
+                    <button>Editar</button>
+                </a>
+                <form action="/usuario/eliminarDesdeVista/<%= objeto.id %>" method="POST">
                     <button type="submit">Eliminar</button>
                 </form>
 
             </td>
         </tr>
     <% }) %>
-    
+
 </table>
 
 <%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>

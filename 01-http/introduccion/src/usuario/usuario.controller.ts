@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import {UsuarioService} from "./usuario.service";
 import {MascotaService} from "src/mascota/mascota.service";
+import {UsuarioEntity} from "./usuario.entity";
 
 @Controller('usuario')
 export class UsuarioController {
@@ -273,7 +274,29 @@ export class UsuarioController {
         }
     }
 
-    /* VISTAS */
+    @Post('editarDesdeVista/:id')
+    async editarDesdeVista(
+        @Param() parametrosRuta,
+        @Body() parametrosCuerpo,
+        @Res() res
+    ) {
+        const usuarioEditado = {
+            id: Number(parametrosRuta.id),
+            nombre: parametrosCuerpo.nombre,
+            apellido: parametrosCuerpo.apellido,
+            //cedula: parametrosCuerpo.cedula, //ya que no se debe editar la cedula
+        } as UsuarioEntity;
+        try {
+            await this._usuarioService.editarUno(usuarioEditado);
+            return res.redirect('/usuario/vista/inicio?mensaje=Usuario Editado')
+        }catch (error) {
+            console.error(error)
+            return res.redirect('/usuario/vista/inicio?mensaje=Error editando usuario')
+        }
+    }
+
+
+    /* -------------------- VISTAS -------------------- */
     @Get('vista/usuario')
     vistaUsuario(
         @Res() res
@@ -302,11 +325,12 @@ export class UsuarioController {
 
     @Get('vista/inicio')
     async inicio(
-        @Res() res
+        @Res() res,
+        @Query() parametrosConsulta
     ) {
         let resultadoEncontrado
         try {
-            resultadoEncontrado = await this._usuarioService.buscarTodos();
+            resultadoEncontrado = await this._usuarioService.buscarTodos(parametrosConsulta.busqueda);
         } catch (error) {
             throw new InternalServerErrorException('Error encontrando usuarios')
         }
@@ -314,7 +338,8 @@ export class UsuarioController {
             res.render(
                 'usuario/inicio',
                 {
-                    arregloUsuarios: resultadoEncontrado
+                    arregloUsuarios: resultadoEncontrado,
+                    parametrosConsulta: parametrosConsulta
                 })
         } else {
             throw new NotFoundException('No se encontraron usuarios')
@@ -342,6 +367,33 @@ export class UsuarioController {
                 cedula: parametrosConsulta.cedula
             }
         )
+    }
+
+    @Get('vista/editar/:id')
+    async editarUsuarioVista(
+        @Query() parametrosConsulta,
+        @Param() parametrosRuta,
+        @Res() res
+    ) {
+        const id = Number(parametrosRuta.id)
+        let usuarioEncontrado
+        try {
+            usuarioEncontrado = await this._usuarioService.buscarUno(id)
+        } catch (e) {
+            console.error('Error del servidor')
+            return res.redirect('/usuario/vista/inicio?mensaje=Error buscando usuario')
+        }
+        if (usuarioEncontrado) {
+            return res.render(
+                'usuario/crear',
+                {
+                    error: parametrosConsulta.error,
+                    usuario: usuarioEncontrado
+                }
+            )
+        } else {
+            return res.redirect('/usuario/vista/inicio?mensaje=Usuario no encontrado')
+        }
     }
 
 }

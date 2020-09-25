@@ -54,7 +54,7 @@ export class UsuarioController {
     @Get()
     async mostrarTodos() {
         try {
-            const respuesta = await this._usuarioService.buscarTodos();
+            const respuesta = await this._usuarioService.buscarTodos('');
             return respuesta;
         } catch (e) {
             console.error(e)
@@ -331,6 +331,7 @@ export class UsuarioController {
         let resultadoEncontrado
         try {
             resultadoEncontrado = await this._usuarioService.buscarTodos(parametrosConsulta.busqueda);
+            console.log('----------------', resultadoEncontrado)
         } catch (error) {
             throw new InternalServerErrorException('Error encontrando usuarios')
         }

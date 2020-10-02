@@ -1,0 +1,75 @@
+<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<% if(typeof mensaje != 'undefined') { %>
+    <div class="container">
+        <div class="alert alert-warning" role="alert">
+            Mensaje: <%= mensaje %>
+        </div>
+    </div>
+<% } %>
+
+<div class="container">
+    <h1>Artistas</h1>
+    <div class="mb-3">
+        <a href="/artista/vista/crear">
+            <button type="button" class="btn btn-primary">
+                Crear Artista
+            </button>
+        </a>
+    </div>
+    <form action="/artista/vista/inicio" method="GET">
+        <div class="input-group mb-3">
+            <label for="buscarID"></label>
+            <input id="buscarID" type="text" class="form-control" placeholder="Buscar Artistas" name="busqueda">
+            <div class="input-group-append">
+                <button class="btn btn-info" type="submit">Buscar</button>
+            </div>
+        </div>
+    </form>
+    <div class="mb-3">
+        <div class="row">
+            <% arregloArtistas.forEach((artista) => { %>
+                <div class="col-lg-4">
+                    <div class="card border-primary mb-3" style="width: auto;">
+                        <img src="<%= artista.pathImagen %>"
+                             class="card-img-top mx-auto d-block mt-1"
+                             style="width: 15rem;">
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-bold">
+                                <%= artista.nombre %>
+                                - <%= artista.pais %>
+                            </h5>
+                            <p class="card-text">
+                                Año Debut: <%= artista.anioDebut %>
+                            </p>
+                            <p class="card-text">
+                                Género: <%= artista.genero %>
+                            </p>
+                            <p class="card-text">
+                                Canción Popular: <%= artista.cancion %>
+                            </p>
+                            <p class="card-text">
+                                Disquera: <%= artista.discografia %>
+                            </p>
+                            <a href="/artista/vista/editar/<%= artista.idArtista %>">
+                                <button type="submit" class="btn btn-primary btn-block mb-1">
+                                    Editar
+                                </button>
+                            </a>
+                            <form action="/artista/eliminarDesdeVista/<%= artista.idArtista %>"
+                                  method="POST">
+                                <button type="submit" class="btn btn-danger btn-block">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>

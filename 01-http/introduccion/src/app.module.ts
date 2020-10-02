@@ -10,6 +10,8 @@ import {MascotaEntity} from "./mascota/mascota.entity";
 import {VacunaEntity} from "./vacuna/vacuna.entity";
 import {MascotaModule} from "./mascota/mascota.module";
 import {VacunaModule} from "./vacuna/vacuna.module";
+import {ArtistaModule} from "./artista/artista.module";
+import {ArtistaEntity} from "./artista/artista.entity";
 
 @Module({
     imports: [
@@ -19,6 +21,7 @@ import {VacunaModule} from "./vacuna/vacuna.module";
         UsuarioModule,
         MascotaModule,
         VacunaModule,
+        ArtistaModule,
         TypeOrmModule
             .forRoot({
                 name: 'default',  // nombre conexion
@@ -31,7 +34,8 @@ import {VacunaModule} from "./vacuna/vacuna.module";
                 entities: [  // TODAS LAS ENTIDADES
                     UsuarioEntity,
                     MascotaEntity,
-                    VacunaEntity
+                    VacunaEntity,
+                    ArtistaEntity,
                 ],
                 synchronize: true,  // Actualizar el esquema de la base de datos
                 dropSchema: false,  // Eliminar Datos y el esquema de la base de datos

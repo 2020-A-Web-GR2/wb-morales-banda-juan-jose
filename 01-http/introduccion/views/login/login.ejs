@@ -1,14 +1,42 @@
-<form action="/login" method="POST">
-    <label for="usuarioID">Usuario: </label>
-    <input id="usuarioID"
-           type="text"
-           name="usuario">
-    <label for="ID">Password: </label>
-    <input id="passwordID"
-           type="password"
-           name="password">
-    <button type="submit">
-        Logearse
-    </button>
-</form>
+<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
 
+
+<div class="container mb-3">
+    <h1 class="text-center">ESCUELA POLITÉCNICA NACIONAL</h1>
+    <h2 class="text-center">Examen Aplicaciones Web</h2>
+    <h3 class="text-center">Juan José Morales</h3>
+    <h4 class="text-center">CRUD Artistas</h4>
+</div>
+
+<% if(typeof mensaje != 'undefined') { %>
+    <div class="container">
+        <div class="alert alert-warning" role="alert">
+            Mensaje: <%= mensaje %>
+        </div>
+    </div>
+<% } %>
+
+<div class="container">
+    <form action="/login" method="POST">
+        <div class="input-group mb-1">
+            <label for="usuarioID" class="input-group-text">Usuario: </label>
+            <input id="usuarioID"
+                   type="text"
+                   name="usuario"
+                   class="form-control">
+        </div>
+        <div class="input-group mb-1">
+            <label for="passwordID" class="input-group-text">Password: </label>
+            <input id="passwordID"
+                   type="password"
+                   name="password"
+                   class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            Logearse
+        </button>
+    </form>
+</div>
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>

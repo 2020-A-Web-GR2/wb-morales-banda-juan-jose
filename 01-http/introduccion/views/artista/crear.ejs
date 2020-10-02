@@ -1,0 +1,128 @@
+<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<% let existeImagen = typeof pathImagen !== 'undefined' %>
+<% let existeNombre = typeof nombre !== 'undefined' %>
+<% let existePais = typeof pais !== 'undefined' %>
+<% let existeAnioDebut = typeof anioDebut !== 'undefined' %>
+<% let existeGenero = typeof genero !== 'undefined' %>
+<% let existeCancion = typeof cancion !== 'undefined' %>
+<% let existeDiscografia = typeof discografia !== 'undefined' %>
+<% const existeArtista = typeof artista !== 'undefined' %>
+<% if (existeArtista) {
+    existeImagen = true
+    existeNombre = true
+    existePais = true
+    existeAnioDebut = true
+    existeGenero = true
+    existeCancion = true
+    existeDiscografia = true
+    pathImagen = artista.pathImagen
+    nombre = artista.nombre
+    pais = artista.pais
+    anioDebut = artista.anioDebut
+    genero = artista.genero
+    cancion = artista.cancion
+    discografia = artista.discografia
+} %>
+
+<% if(typeof mensaje != 'undefined') { %>
+    <div class="container">
+        <div class="alert alert-warning" role="alert">
+            Mensaje: <%= mensaje %>
+        </div>
+    </div>
+<% } %>
+
+<div class="container">
+    <h1> <%= existeArtista ? 'EDITAR' : 'CREAR' %> ARTISTA</h1>
+</div>
+
+<form action=" <%= existeArtista ? '/artista/editarDesdeVista/' + artista.idArtista : '/artista/crearDesdeVista' %> "
+      method="POST">
+    <div class="container">
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="pathImagenID">URL Imagen: </label>
+            <input id="pathImagenID"
+                   type="text"
+                   maxlength=500
+                   class="form-control"
+                   placeholder="Path Imagen"
+                   name="pathImagen"
+                   value="<%= existeImagen ? pathImagen : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="nombreID">Nombre: </label>
+            <input id="nombreID"
+                   type="text"
+                   maxlength=30
+                   class="form-control"
+                   placeholder="Nombre del artista"
+                   name="nombre"
+                   value="<%= existeNombre ? nombre : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="paisID">País: </label>
+            <input id="paisID"
+                   type="text"
+                   maxlength=60
+                   class="form-control"
+                   placeholder="País del artista"
+                   name="pais"
+                   value="<%= existePais ? pais : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="anioDebutID">Año Debut: </label>
+            <input id="anioDebutID"
+                   type="number"
+                   min=0
+                   class="form-control"
+                   placeholder="Año de debut"
+                   name="anioDebut"
+                   value="<%= existeAnioDebut ? anioDebut : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="generoID">Género: </label>
+            <input id="generoID"
+                   type="text"
+                   maxlength=30
+                   class="form-control"
+                   placeholder="Género principal"
+                   name="genero"
+                   value="<%= existeGenero ? genero : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="cancionID">Canción: </label>
+            <input id="cancionID"
+                   type="text"
+                   maxlength=60
+                   class="form-control"
+                   placeholder="Canción más popular"
+                   name="cancion"
+                   value="<%= existeCancion ? cancion : '' %>">
+        </div>
+        <div class="input-group mb-1">
+            <label class="input-group-text" for="discografiaID">Discografía: </label>
+            <input id="discografiaID"
+                   type="text"
+                   maxlength=40
+                   class="form-control"
+                   placeholder="Discografía asociada"
+                   name="discografia"
+                   value="<%= existeDiscografia ? discografia : '' %>">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">
+                <% if(existeArtista) { %>
+                    Editar
+                <% } else { %>
+                    Crear
+                <% } %>
+            </button>
+            <button type="reset" class="btn btn-secondary">Limpiar Campos</button>
+        </div>
+    </div>
+</form>
+
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>
